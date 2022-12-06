@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prisma:init": "prisma migrate dev",
+    "prisma:pull": "prisma db pull",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -26,12 +28,18 @@
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@prisma/client": "^4.7.1",
+    "global": "^4.4.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "prisma": "^4.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
