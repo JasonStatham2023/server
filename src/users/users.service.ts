@@ -17,11 +17,14 @@ const users: User[] = [
 
 @Injectable()
 export class UsersService {
-  constructor(readonly users) {
+  readonly users: User[];
+
+  constructor() {
     this.users = users;
   }
 
   async findOne(username: string): Promise<User | undefined> {
+    console.log(this.users);
     return Promise.resolve(
       this.users.find((user) => user.username === username),
     );

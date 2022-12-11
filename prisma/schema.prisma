@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,105 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model File {
-  id          Int         @id @default(autoincrement())
-  url         String?     @db.VarChar(255)
-  size        Int?
-  md5FileName String?
-  name        String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime
-  VideoFile   VideoFile[]
-  Zone        Zone[]
-}
-
-model FrozenRecord {
-  id          Int           @id @default(autoincrement())
-  userId      Int?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime
-  status      Int           @default(0)
-  User        User?         @relation(fields: [userId], references: [id])
-  OrderRecord OrderRecord[]
-
-  @@index([userId], map: "FrozenRecord_userId_fkey")
-}
-
-model InviteEarningsRecord {
-  id        Int      @id @default(autoincrement())
-  inviteeId Int      @unique
-  account   String
-  earnings  Decimal  @default(0.00) @db.Decimal(10, 2)
-  userId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-  User      User?    @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "InviteEarningsRecord_userId_fkey")
-}
-
-model OrderRecord {
-  id                Int           @id @default(autoincrement())
-  earnings          Decimal       @db.Decimal(10, 2)
-  amount            Decimal       @default(0.00) @db.Decimal(10, 2)
-  status            Int           @default(0)
-  freezeExpiresTime DateTime?
-  zoneId            Int?
-  userId            Int?
-  frozenRecordId    Int?
-  timestamp         Int           @default(0)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime
-  FrozenRecord      FrozenRecord? @relation(fields: [frozenRecordId], references: [id])
-  User              User?         @relation(fields: [userId], references: [id])
-  Zone              Zone?         @relation(fields: [zoneId], references: [id])
-
-  @@index([frozenRecordId], map: "OrderRecord_frozenRecordId_fkey")
-  @@index([userId], map: "OrderRecord_userId_fkey")
-  @@index([zoneId], map: "OrderRecord_zoneId_fkey")
-}
-
-model RechargeRecord {
-  id              Int      @id @default(autoincrement())
-  userId          Int?
-  type            Int      @default(0)
-  transactionHash String?  @default("") @db.VarChar(255)
-  amount          Decimal  @db.Decimal(10, 2)
-  specialAmount   Decimal  @default(0.00) @db.Decimal(10, 2)
-  status          Int      @default(0)
-  failureReasons  String?  @default("") @db.VarChar(255)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime
-  User            User?    @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "RechargeRecord_userId_fkey")
-}
-
 model User {
-  id                   Int                    @id @default(autoincrement())
-  account              String                 @unique
-  password             String?                @db.VarChar(255)
-  email                String                 @unique
-  isAdmin              Boolean?               @default(false)
-  balance              Decimal?               @default(0.00) @db.Decimal(10, 2)
-  accountFrozen        Decimal?               @default(0.00) @db.Decimal(10, 2)
-  withdrawalAmount     Decimal?               @default(0.00) @db.Decimal(10, 2)
-  walletAddress        String?                @db.VarChar(255)
-  walletPassword       String?                @db.VarChar(255)
-  isActive             Boolean?               @default(false)
-  inviterId            Int?
-  inviterCode          Int?
-  timestamp            Int?                   @default(0)
-  gold                 Int?                   @default(0)
-  token                String?                @db.Text
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime
-  FrozenRecord         FrozenRecord[]
-  InviteEarningsRecord InviteEarningsRecord[]
-  OrderRecord          OrderRecord[]
-  RechargeRecord       RechargeRecord[]
-  UserProfile          UserProfile[]
-  WithdrawalRecord     WithdrawalRecord[]
+  id                    Int                    @id @default(autoincrement())
+  account               String                 @unique
+  password              String?                @db.VarChar(255)
+  email                 String                 @unique
+  isAdmin               Boolean?               @default(false)
+  balance               Decimal?               @default(0.00) @db.Decimal(10, 2)
+  accountFrozen         Decimal?               @default(0.00) @db.Decimal(10, 2)
+  withdrawalAmount      Decimal?               @default(0.00) @db.Decimal(10, 2)
+  walletAddress         String?                 @db.VarChar(255)
+  walletPassword        String?                @db.VarChar(255)
+  isActive              Boolean?               @default(false)
+  inviterId             Int?
+  inviterCode           Int?
+  timestamp             Int?                    @default(0)
+  gold                  Int?                   @default(0)
+  token                 String?                @db.Text
+  frozenRecords         FrozenRecord[]
+  profiles              UserProfile[]
+  orderRecords          OrderRecord[]
+  rechargeRecords       RechargeRecord[]
+  withdrawalRecords     WithdrawalRecord[]
+  inviteEarningsRecords InviteEarningsRecord[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 }
 
 model UserProfile {
@@ -114,45 +43,37 @@ model UserProfile {
   authCode  String
   isUse     Boolean? @default(false)
   token     String?  @db.Text
+  user      User?    @relation(fields: [userId], references: [id])
   userId    Int?
-  timestamp Int      @default(0)
+  timestamp         Int           @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  User      User?    @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "UserProfile_userId_fkey")
+  updatedAt DateTime @updatedAt
 }
 
 model VideoFile {
   id        Int      @id @default(autoincrement())
+  file      File?    @relation(fields: [fileId], references: [id])
   fileId    Int?
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  File      File?    @relation(fields: [fileId], references: [id])
-
-  @@index([fileId], map: "VideoFile_fileId_fkey")
+  updatedAt DateTime @updatedAt
 }
 
-model WithdrawalRecord {
-  id              Int      @id @default(autoincrement())
-  userId          Int?
-  type            Int      @default(0)
-  account         String
-  transactionHash String?  @default("") @db.VarChar(255)
-  amount          Decimal  @db.Decimal(10, 2)
-  specialAmount   Decimal  @default(0.00) @db.Decimal(10, 2)
-  status          Int      @default(0)
-  failureReasons  String?  @default("") @db.VarChar(255)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime
-  User            User?    @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "WithdrawalRecord_userId_fkey")
+model File {
+  id          Int         @id @default(autoincrement())
+  url         String?     @db.VarChar(255)
+  size        Int?
+  md5FileName String?
+  name        String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  Zones       Zone[]
+  VideoFiles  VideoFile[]
 }
 
 model Zone {
   id            Int           @id @default(autoincrement())
   title         String        @db.VarChar(255)
+  cover         File?         @relation(fields: [coverId], references: [id])
   coverId       Int?
   maxFreezesNum Int           @default(0)
   probability   Int           @default(0)
@@ -161,12 +82,76 @@ model Zone {
   takes         Int           @default(0)
   introduce     String        @db.Text
   htmlIntroduce String        @db.Text
-  award         Decimal       @default(0.00) @db.Decimal(10, 2)
+  award         Decimal           @default(0.00) @db.Decimal(10, 2)
   gold          Int           @default(0)
+  orderRecords  OrderRecord[]
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime
-  File          File?         @relation(fields: [coverId], references: [id])
-  OrderRecord   OrderRecord[]
+  updatedAt     DateTime      @updatedAt
+}
 
-  @@index([coverId], map: "Zone_coverId_fkey")
+model OrderRecord {
+  id                Int           @id @default(autoincrement())
+  earnings          Decimal       @db.Decimal(10, 2) // 收益
+  amount            Decimal       @default(0.00) @db.Decimal(10, 2)
+  status            Int           @default(0) // 0 正常状态 1 冻结状态 2 正在解冻状态
+  freezeExpiresTime DateTime?
+  zone              Zone?         @relation(fields: [zoneId], references: [id])
+  zoneId            Int?
+  user              User?         @relation(fields: [userId], references: [id])
+  userId            Int?
+  frozenRecord      FrozenRecord? @relation(fields: [frozenRecordId], references: [id])
+  frozenRecordId    Int?
+  timestamp         Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model FrozenRecord {
+  id           Int           @id @default(autoincrement())
+  user         User?         @relation(fields: [userId], references: [id])
+  userId       Int?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  status       Int           @default(0) // 0 未解冻 1 已解冻
+  orderRecords OrderRecord[]
+}
+
+model RechargeRecord {
+  id              Int      @id @default(autoincrement())
+  user            User?    @relation(fields: [userId], references: [id])
+  userId          Int?
+  type            Int      @default(0)
+  transactionHash String?  @default("") @db.VarChar(255)
+  amount          Decimal  @db.Decimal(10, 2)
+  specialAmount   Decimal  @default(0) @db.Decimal(10, 2)
+  status          Int      @default(0)
+  failureReasons  String?  @default("") @db.VarChar(255)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model WithdrawalRecord {
+  id              Int      @id @default(autoincrement())
+  user            User?    @relation(fields: [userId], references: [id])
+  userId          Int?
+  type            Int      @default(0)
+  account         String
+  transactionHash String?  @default("") @db.VarChar(255)
+  amount          Decimal  @db.Decimal(10, 2)
+  specialAmount   Decimal  @default(0) @db.Decimal(10, 2)
+  status          Int      @default(0)
+  failureReasons  String?  @default("") @db.VarChar(255)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model InviteEarningsRecord {
+  id        Int      @id @default(autoincrement())
+  inviteeId Int      @unique
+  account   String
+  earnings  Decimal  @default(0) @db.Decimal(10, 2)
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
