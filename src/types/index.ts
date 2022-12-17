@@ -1,6 +1,7 @@
 export type UserEntityType = {
-  tel: string;
-  authCode: string;
-  isAdmin: boolean;
+  account: string;
+  email: string;
+  isAdmin: number;
   id: number;
+  timestamp: number;
 };

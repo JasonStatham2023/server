@@ -1,7 +1,12 @@
-import { createParamDecorator } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-// 创建自定义的参数装饰器
-export const Authorized = createParamDecorator((data: any, req: any) => {
-  // 从请求对象中获取 JWT 中解析到的数据
-  return req.user;
-});
+export const Authorized = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    // 从 ExecutionContext 获取请求对象
+    const request = ctx.switchToHttp().getRequest();
+    console.log('______________');
+    console.log(request.user);
+    // 返回请求对象的 user 属性
+    return request.user;
+  },
+);

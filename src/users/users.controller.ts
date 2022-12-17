@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AuthService } from '../auth/auth.service';
 import * as md5 from 'md5';
@@ -615,9 +615,11 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('/userinfo')
   async userinfo(
     @Authorized() user: UserEntityType,
   ): Promise<CustomResponse<any>> {
+    console.log(user);
     const data = await this.prisma.user.findUnique({
       where: {
         id: user.id,
