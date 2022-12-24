@@ -14,14 +14,13 @@ export class AuthService {
   ) {}
 
   async validateUser(userEntity: UserEntityType): Promise<any> {
-    console.log(333333);
-    const count = await this.prisma.user.count({
+    const user = await this.prisma.user.findUnique({
       where: {
         email: userEntity.email,
       },
     });
-    if (count) {
-      return userEntity;
+    if (user) {
+      return { ...userEntity, isAdmin: !!user.isAdmin };
     }
     return null;
   }
