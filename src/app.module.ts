@@ -7,10 +7,12 @@ import { ProfileController } from './profile/profile.controller';
 import { ZonesController } from './zones/zones.controller';
 import { PrismaService } from './prisma.service';
 import { FileController } from './file/file.controller';
+import { VideoController } from './video/video.controller';
+import { WithdrawalController } from './withdrawal/withdrawal.controller';
 
 @Module({
   imports: [AuthModule, UsersModule],
-  controllers: [AppController, ProfileController, ZonesController, FileController],
+  controllers: [AppController, ProfileController, ZonesController, FileController, VideoController, WithdrawalController],
   providers: [AppService, PrismaService],
 })
 export class AppModule {}

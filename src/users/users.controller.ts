@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import * as md5 from 'md5';
 import {

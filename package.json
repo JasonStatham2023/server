@@ -23,16 +23,17 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@devoxa/prisma-relay-cursor-connection": "^2.2.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@prisma/client": "^3.15.0",
+    "@types/multer": "^1.4.7",
     "aliyun-sdk": "^1.12.5",
     "global": "^4.4.0",
     "gray-matter": "^4.0.3",
-    "@types/multer": "^1.4.7",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "nodemailer": "^6.8.0",
