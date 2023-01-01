@@ -10,10 +10,11 @@ import { FileController } from './file/file.controller';
 import { VideoController } from './video/video.controller';
 import { WithdrawalController } from './withdrawal/withdrawal.controller';
 import { RechargeController } from './recharge/recharge.controller';
+import { SignInController } from './sign-in/sign-in.controller';
 
 @Module({
   imports: [AuthModule, UsersModule],
-  controllers: [AppController, ProfileController, ZonesController, FileController, VideoController, WithdrawalController, RechargeController],
+  controllers: [AppController, ProfileController, ZonesController, FileController, VideoController, WithdrawalController, RechargeController, SignInController],
   providers: [AppService, PrismaService],
 })
 export class AppModule {}

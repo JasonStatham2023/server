@@ -19,12 +19,12 @@ model User {
   balance               Decimal?               @default(0.00) @db.Decimal(10, 2)
   accountFrozen         Decimal?               @default(0.00) @db.Decimal(10, 2)
   withdrawalAmount      Decimal?               @default(0.00) @db.Decimal(10, 2)
-  walletAddress         String?                 @db.VarChar(255)
+  walletAddress         String?                @db.VarChar(255)
   walletPassword        String?                @db.VarChar(255)
   isActive              Boolean?               @default(false)
   inviterId             Int?
   inviterCode           Int?
-  timestamp             Int?                    @default(0)
+  timestamp             Int?                   @default(0)
   gold                  Int?                   @default(0)
   token                 String?                @db.Text
   frozenRecords         FrozenRecord[]
@@ -32,6 +32,7 @@ model User {
   orderRecords          OrderRecord[]
   rechargeRecords       RechargeRecord[]
   withdrawalRecords     WithdrawalRecord[]
+  siginRecords          SignInRecord[]
   inviteEarningsRecords InviteEarningsRecord[]
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
@@ -45,7 +46,7 @@ model UserProfile {
   token     String?  @db.Text
   user      User?    @relation(fields: [userId], references: [id])
   userId    Int?
-  timestamp         Int           @default(0)
+  timestamp Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -82,7 +83,7 @@ model Zone {
   takes         Int           @default(0)
   introduce     String        @db.Text
   htmlIntroduce String        @db.Text
-  award         Decimal           @default(0.00) @db.Decimal(10, 2)
+  award         Decimal       @default(0.00) @db.Decimal(10, 2)
   gold          Int           @default(0)
   orderRecords  OrderRecord[]
   createdAt     DateTime      @default(now())
@@ -152,6 +153,15 @@ model InviteEarningsRecord {
   earnings  Decimal  @default(0) @db.Decimal(10, 2)
   user      User?    @relation(fields: [userId], references: [id])
   userId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SignInRecord {
+  id        Int      @id @default(autoincrement())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  timestamp Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
