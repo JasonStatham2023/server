@@ -21,6 +21,8 @@ model User {
   withdrawalAmount      Decimal?               @default(0.00) @db.Decimal(10, 2)
   walletAddress         String?                @db.VarChar(255)
   walletPassword        String?                @db.VarChar(255)
+  pixCompellation       String?                @db.VarChar(255)
+  pixAccount            String?                @db.VarChar(255)
   isActive              Boolean?               @default(false)
   inviterId             Int?
   inviterCode           Int?

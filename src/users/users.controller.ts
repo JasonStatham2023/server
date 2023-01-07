@@ -6,7 +6,7 @@ import {
   aliyunSendEmail,
   generateErrorResponse,
   generateSuccessResponse,
-  getTimestamp,
+  getCurrentDayTimestamp,
 } from '../utils';
 import { INVITE_BASE_NUMBER, WEB_HOST } from '../constant';
 import { CustomResponse } from '../models';
@@ -241,7 +241,7 @@ export class UsersController {
 
   async sendEmailLink(email: string, type): Promise<CustomResponse<any>> {
     const authCode = this.createAuthCode(6);
-    const { currentTimestamp, toDayStartTimestamp } = getTimestamp();
+    const { currentTimestamp, toDayStartTimestamp } = getCurrentDayTimestamp();
     const profiles = await this.prisma.userProfile.findMany({
       where: {
         email,
@@ -319,7 +319,7 @@ export class UsersController {
   async activateAccount(
     @Body() { email, authCode }: { email: string; authCode: string },
   ): Promise<CustomResponse<any>> {
-    const { currentTimestamp } = getTimestamp();
+    const { currentTimestamp } = getCurrentDayTimestamp();
     const sqlUser = await this.prisma.user.findUnique({
       where: {
         email,
@@ -425,7 +425,7 @@ export class UsersController {
       walletPassword: string;
     },
   ): Promise<CustomResponse<any>> {
-    const { toDayStartTimestamp } = getTimestamp();
+    const { toDayStartTimestamp } = getCurrentDayTimestamp();
     const profiles = await this.prisma.userProfile.findMany({
       where: {
         email,
@@ -519,7 +519,7 @@ export class UsersController {
       password: string;
     },
   ): Promise<CustomResponse<any>> {
-    const { currentTimestamp } = getTimestamp();
+    const { currentTimestamp } = getCurrentDayTimestamp();
     const twentyFourHoursAgoTimestamp = currentTimestamp - 24 * 60 * 60 * 1000;
     const profiles = await this.prisma.userProfile.findMany({
       where: {

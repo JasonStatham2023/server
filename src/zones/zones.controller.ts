@@ -9,7 +9,7 @@ import * as matter from 'gray-matter';
 import {
   generateErrorResponse,
   generateSuccessResponse,
-  getTimestamp,
+  getCurrentDayTimestamp,
 } from '../utils';
 import { JwtStrategy } from '../auth/jwt.strategy';
 
@@ -23,7 +23,7 @@ export class ZonesController {
     @Authorized() user: UserEntityType,
     @Query('zoneId') zoneId: number,
   ): Promise<CustomResponse<UserZoneInfo>> {
-    const { toDayStartTimestamp } = getTimestamp();
+    const { toDayStartTimestamp } = getCurrentDayTimestamp();
     const sqlZone = await this.prisma.zone.findUnique({
       where: {
         id: zoneId,

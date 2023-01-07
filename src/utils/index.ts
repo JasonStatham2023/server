@@ -1,4 +1,4 @@
 export * from './createResponse';
-export * from './getTimestamp';
+export * from './getCurrentDayTimestamp';
 export * from './aliyunSendEmail';
 export * from './sendEmail';

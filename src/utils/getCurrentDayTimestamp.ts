@@ -1,7 +1,7 @@
 // 设定巴西所在时区与 UTC 时间之间的时间差为 10800000 毫秒
 const timeZoneTimestamp = 10800000;
 
-export const getTimestamp = (): {
+export const getCurrentDayTimestamp = (): {
   toDayStartTimestamp: number;
   toDayEndTimestamp: number;
   currentTimestamp: number;

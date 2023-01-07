@@ -5,6 +5,7 @@ import { generateErrorResponse, generateSuccessResponse } from '../utils';
 import { PrismaService } from '../prisma.service';
 import { Authorized } from '../decorators';
 import { UserEntityType } from '../types';
+import { getCurrentMonthTimestamp } from '../utils/getCurrentMonthTimestamp';
 
 interface Task {
   id: number;
@@ -81,15 +82,190 @@ export class TaskController {
   async receive(
     @Body() { taskId }: { taskId: number },
     @Authorized() user: UserEntityType,
-  ) {
+  ): Promise<CustomResponse<any>> {
     const taskMap = {
-      1: async () => {
-        const count = await this.prisma.signInRecord.count({
+      1: async (): Promise<CustomResponse<any>> => {
+        const taskCount = await this.prisma.taskRecord.count({
+          where: {
+            userId: user.id,
+            taskId,
+          },
+        });
+
+        if (taskCount) {
+          return generateErrorResponse(99, 'This task has been completed');
+        }
+
+        const signInCount = await this.prisma.signInRecord.count({
           where: {
             userId: user.id,
           },
         });
+
+        if (!signInCount) {
+          return generateErrorResponse(99, 'Did not sign in');
+        }
+        await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            balance: {
+              increment: 1,
+            },
+          },
+        });
+        await this.prisma.taskRecord.create({
+          data: {
+            userId: user.id,
+            taskId,
+          },
+        });
+        return generateSuccessResponse('Congratulations on getting 1 yuan');
       }, // 签到 领取一元
+      2: async (): Promise<CustomResponse<any>> => {
+        const taskCount = await this.prisma.taskRecord.count({
+          where: {
+            userId: user.id,
+            taskId,
+          },
+        });
+
+        if (taskCount) {
+          return generateErrorResponse(99, 'This task has been completed');
+        }
+
+        const orderCount = await this.prisma.orderRecord.count({
+          where: {
+            userId: user.id,
+          },
+        });
+        if (orderCount < 5) {
+          return generateErrorResponse(99, 'The task is not completed');
+        }
+        await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            balance: {
+              increment: 1,
+            },
+          },
+        });
+        await this.prisma.taskRecord.create({
+          data: {
+            userId: user.id,
+            taskId,
+          },
+        });
+        return generateSuccessResponse('Congratulations on getting 1 yuan');
+      },
+      3: async (): Promise<CustomResponse<any>> => {
+        const taskCount = await this.prisma.taskRecord.count({
+          where: {
+            userId: user.id,
+            taskId,
+          },
+        });
+
+        if (taskCount) {
+          return generateErrorResponse(99, 'This task has been completed');
+        }
+
+        const { walletPassword } = await this.prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        if (!walletPassword) {
+          return generateErrorResponse(99, 'The task is not completed');
+        }
+        await this.prisma.taskRecord.create({
+          data: {
+            userId: user.id,
+            taskId,
+          },
+        });
+        await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            balance: {
+              increment: 5,
+            },
+          },
+        });
+        return generateSuccessResponse('Congratulations on getting 5 yuan');
+      },
+      4: async (): Promise<CustomResponse<any>> => {
+        const taskCount = await this.prisma.taskRecord.count({
+          where: {
+            userId: user.id,
+            taskId,
+          },
+        });
+
+        if (taskCount) {
+          return generateErrorResponse(99, 'This task has been completed');
+        }
+
+        const { pixCompellation, pixAccount } =
+          await this.prisma.user.findUnique({
+            where: { id: user.id },
+          });
+        if (!pixCompellation || !pixAccount) {
+          return generateErrorResponse(99, 'The task is not completed');
+        }
+        await this.prisma.taskRecord.create({
+          data: {
+            userId: user.id,
+            taskId,
+          },
+        });
+        await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            balance: {
+              increment: 5,
+            },
+          },
+        });
+        return generateSuccessResponse('Congratulations on getting 5 yuan');
+      },
+      5: async (): Promise<CustomResponse<any>> => {
+        return this.playTask({
+          userId: user.id,
+          taskId,
+          frequency: 55,
+          reward: 10,
+        });
+      },
+      6: async (): Promise<CustomResponse<any>> => {
+        return this.playTask({
+          userId: user.id,
+          taskId,
+          frequency: 155,
+          reward: 30,
+        });
+      },
+      7: async (): Promise<CustomResponse<any>> => {
+        return this.playTask({
+          userId: user.id,
+          taskId,
+          frequency: 355,
+          reward: 100,
+        });
+      },
+      8: async (): Promise<CustomResponse<any>> => {
+        return this.playTask({
+          userId: user.id,
+          taskId,
+          frequency: 855,
+          reward: 300,
+        });
+      },
     };
 
     if (taskMap[taskId]) {
@@ -99,5 +275,59 @@ export class TaskController {
     }
   }
 
-  async task1() {}
+  async playTask({
+    userId,
+    taskId,
+    frequency,
+    reward,
+  }): Promise<CustomResponse<any>> {
+    const { toMonthEndTimestamp, toMonthStartTimestamp, currentTimestamp } =
+      getCurrentMonthTimestamp();
+    const taskCount = await this.prisma.taskRecord.count({
+      where: {
+        userId: userId,
+        taskId,
+        timestamp: {
+          gt: toMonthStartTimestamp,
+          lt: toMonthEndTimestamp,
+        },
+      },
+    });
+
+    if (taskCount) {
+      return generateErrorResponse(99, 'This task has been completed');
+    }
+
+    const orderCount = await this.prisma.orderRecord.count({
+      where: {
+        userId: userId,
+        timestamp: {
+          gt: toMonthStartTimestamp,
+          lt: toMonthEndTimestamp,
+        },
+      },
+    });
+
+    if (orderCount < frequency) {
+      return generateErrorResponse(99, 'This task has been completed');
+    }
+    await this.prisma.taskRecord.create({
+      data: {
+        userId,
+        taskId,
+        timestamp: currentTimestamp,
+      },
+    });
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        balance: {
+          increment: reward,
+        },
+      },
+    });
+    return generateSuccessResponse('Congratulations on getting 10 yuan');
+  }
 }

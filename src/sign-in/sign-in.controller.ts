@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma.service';
 import {
   generateErrorResponse,
   generateSuccessResponse,
-  getTimestamp,
+  getCurrentDayTimestamp,
 } from '../utils';
 import { CustomResponse } from '../models';
 
@@ -84,7 +84,7 @@ export class SignInController {
   ): Promise<CustomResponse<any>> {
     const signInReceiveRewards = createSignInReceiveRewards();
     const { toDayStartTimestamp, toDayEndTimestamp, currentTimestamp } =
-      getTimestamp();
+      getCurrentDayTimestamp();
     const isSignIn = await this.prisma.signInRecord.count({
       where: {
         userId: user.id,
@@ -151,7 +151,7 @@ export class SignInController {
     }>
   > {
     const signInReceiveRewards = createSignInReceiveRewards();
-    const { toDayStartTimestamp, toDayEndTimestamp } = getTimestamp();
+    const { toDayStartTimestamp, toDayEndTimestamp } = getCurrentDayTimestamp();
 
     const count = await this.prisma.signInRecord.count({
       where: {
